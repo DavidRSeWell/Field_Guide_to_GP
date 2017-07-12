@@ -1,6 +1,6 @@
 import random
 import numpy as np
-
+from sympy import symbols
 
 class Tree(object):
     def __init__(self):
@@ -28,6 +28,12 @@ class Tree(object):
 
 # Termination = individual w/ fitness < 0.1
 
+x = symbols('x')
+
+Termination_Set = [x] + [i for i in range(-5,5)]
+
+Function_Set = ['+','-','*','%']
+
 parameters = {
     'pop_size':4,
     'crossover':0.5,
@@ -37,8 +43,10 @@ parameters = {
 
 population = []
 
+
 def choose_random_element(set_input):
     return set_input[np.random.randint(len(set_input))]
+
 
 def generate_random_tree(func_set,term_set,max_d,method):
 
@@ -47,9 +55,18 @@ def generate_random_tree(func_set,term_set,max_d,method):
 
     else:
         func = choose_random_element(func_set)
+        expr = [func]
+        # binary tree
+        for i in range(2):
+            arg = generate_random_tree(func_set,term_set,max_d -1,method)
+            expr.append(arg)
+
+    return expr
 
 def init_pop():
 
     for i in range(parameters['pop_size']):
 
         program = True()
+        program.Left = generate_random_tree(Function_Set,Termination_Set,2,'full')
+        program.Right = generate_random_tree(Function_Set,Termination_Set,2,'full')
