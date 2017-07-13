@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from sympy import symbols
+from sympy import symbols,sympify
 
 class Tree(object):
     def __init__(self):
@@ -30,7 +30,7 @@ class Tree(object):
 
 x = symbols('x')
 
-Termination_Set = [x] + [i for i in range(-5,5)]
+Termination_Set = [x] + [float(i) for i in range(-5,5)]
 
 Function_Set = ['+','-','*','%']
 
@@ -44,29 +44,65 @@ parameters = {
 population = []
 
 
+def evaluate_tree(tree):
+
+    tots_expr = ''
+    res1 = None
+    res2 = None
+    if tree:
+        res1 =  evaluate_tree(tree.Left)
+        res2 = evaluate_tree(tree.Right)
+        if res1 and res2:
+            return (str(res1) + str(tree.state) + str(res2))
+
+        else:
+            return str(tree.state)
+
+
+
+
 def choose_random_element(set_input):
+
     return set_input[np.random.randint(len(set_input))]
 
 
 def generate_random_tree(func_set,term_set,max_d,method):
 
     if max_d == 0 or (method == 'grow' and random.random() < len(term_set)/(len(term_set) + len(func_set))):
-        expr = choose_random_element(term_set)
+        new_tree = Tree()
+        new_tree.state = choose_random_element(term_set)
+
 
     else:
         func = choose_random_element(func_set)
-        expr = [func]
+        new_tree = Tree()
+        new_tree.state = func
         # binary tree
         for i in range(2):
             arg = generate_random_tree(func_set,term_set,max_d -1,method)
-            expr.append(arg)
+            if i == 0:
+                new_tree.Left = arg
+            else:
+                new_tree.Right = arg
 
-    return expr
+    return new_tree
+
 
 def init_pop():
 
     for i in range(parameters['pop_size']):
 
-        program = True()
+        program = Tree()
         program.Left = generate_random_tree(Function_Set,Termination_Set,2,'full')
         program.Right = generate_random_tree(Function_Set,Termination_Set,2,'full')
+        program.state = choose_random_element(Function_Set)
+
+        tree_expr = evaluate_tree(program)
+
+        equate = sympify(tree_expr)
+
+        pass
+
+
+
+init_pop()
