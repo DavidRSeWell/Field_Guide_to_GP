@@ -32,7 +32,7 @@ x = symbols('x')
 
 Termination_Set = [x] + [float(i) for i in range(-5,5)]
 
-Function_Set = ['+','-','*','%']
+Function_Set = ['+','-','*','/']
 
 parameters = {
     'pop_size':4,
@@ -41,8 +41,6 @@ parameters = {
     'subtree_mutation':0.25
 }
 
-population = []
-
 
 def evaluate_tree(tree):
 
@@ -50,10 +48,10 @@ def evaluate_tree(tree):
     res1 = None
     res2 = None
     if tree:
-        res1 =  evaluate_tree(tree.Left)
+        res1 = evaluate_tree(tree.Left)
         res2 = evaluate_tree(tree.Right)
         if res1 and res2:
-            return (str(res1) + str(tree.state) + str(res2))
+            return '(' + str(res1) + str(tree.state) + str(res2) + ')'
 
         else:
             return str(tree.state)
@@ -87,6 +85,7 @@ def generate_random_tree(func_set,term_set,max_d,method):
 
     return new_tree
 
+population = []
 
 def init_pop():
 
@@ -97,11 +96,11 @@ def init_pop():
         program.Right = generate_random_tree(Function_Set,Termination_Set,2,'full')
         program.state = choose_random_element(Function_Set)
 
-        tree_expr = evaluate_tree(program)
+        #tree_expr = evaluate_tree(program)
 
-        equate = sympify(tree_expr)
+        #equate = sympify(tree_expr)
 
-        pass
+        population.append(program)
 
 
 
